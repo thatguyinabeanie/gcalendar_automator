@@ -1,6 +1,4 @@
-
-# pull official base image
-FROM python:3.12-slim-bookworm as builder
+FROM python:3.12-slim
 
 ENV RUNNING_IN_DOCKER 1
 ENV APP_HOME=/app
@@ -18,11 +16,6 @@ COPY . $APP_HOME
 
 RUN \
     addgroup --system app && adduser --system --group app && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends gcc netcat-traditional && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt && \
     pip install -r requirements.txt && \
     sed -i 's/\r$//g'  $APP_HOME/entrypoint.sh && \
     chmod +x  $APP_HOME/entrypoint.sh && \
