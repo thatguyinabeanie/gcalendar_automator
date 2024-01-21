@@ -11,6 +11,7 @@ if [ -z "$RUNNING_IN_DOCKER" ]; then
     fi
 fi
 
+# echo "Current working directory: $(pwd)"
 python ./gmail_client.py
 
 

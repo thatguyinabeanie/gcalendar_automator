@@ -4,17 +4,12 @@ import os
 import logging
 import pickle
 
-# import pytz
-# import base64
-
 from google.cloud import pubsub_v1
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
 from icalendar import Calendar as iCalendar
-# Remove the import statement for 'InstalledAppFlow'
-# from google_auth_oauthlib.flow import InstalledAppFlow
 
 # Get logging level from environment variable
 logging_level = os.getenv("LOGGING_LEVEL", "INFO")
@@ -22,13 +17,14 @@ logging_level = os.getenv("LOGGING_LEVEL", "INFO")
 # Convert logging level to corresponding attribute of the logging module
 logging_level = getattr(logging, logging_level.upper(), logging.INFO)
 
+if not os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/data/credentials/service_account.json'
+
 # Configure logging
 logging.basicConfig(
     level=logging_level, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-# TOKEN_FILE = "token.pickle"
-# CREDENTIALS_FILE = "credentials.json"
 CURRENT_HISTORY_ID = None
 
 SCOPES = [
@@ -53,8 +49,7 @@ DEFAULT_GMAIL_LABELS = [
 
 def get_credentials():
     creds = None
-    token_pickle = os.getenv("TOKEN_PICKLE", "./credentials/token.pickle")
-    # credentials_json = CREDENTIALS_FILE  # Path to your downloaded credentials file
+    token_pickle = os.getenv("TOKEN_PICKLE", "/data/credentials/token.pickle")
 
     if os.path.exists(token_pickle):
         with open(token_pickle, "rb") as token:
@@ -65,7 +60,7 @@ def get_credentials():
             creds.refresh(Request())
         else:
             # Define the path to the credentials file
-            credentials_json = os.getenv("GMAIL_CALENDAR_CREDENTIALS")
+            credentials_json = os.getenv("GMAIL_CALENDAR_CREDENTIALS", "/data/credentials/credentials.json")
             flow = InstalledAppFlow.from_client_secrets_file(credentials_json, SCOPES)
             logging.debug(
                 "Running local server to get credentials on port "
@@ -300,12 +295,10 @@ def setup_pubsub_subscription(project_id, subscription_name):
     streaming_pull_future = subscriber.subscribe(
         subscription_path, callback=message_callback
     )
-    # logging.info(f"Subscribed to Pub/Sub topic: {subscription_path}")
     return streaming_pull_future
 
 
 def initialize_gmail_watch(topic_name):
-    # search gmail_label_names_id_dict on key LABEL to get its label_id
     label_id = gmail_label_names_id_dict[ADD_TO_CALENDAR_LABEL_NAME]
 
     logging.debug("Initializing Gmail watch...")

@@ -11,7 +11,6 @@ WORKDIR /usr/src/app
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV RUNNING_IN_DOCKER 1
 
 # install system dependencies
 RUN apt-get update && \
@@ -36,14 +35,14 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 FROM python:3.12-bookworm
 # create directory for the app user
 RUN mkdir -p /home/app
+ENV RUNNING_IN_DOCKER 1
 
 # create the app user
 RUN addgroup --system app && adduser --system --group app
 
 # create the appropriate directories
-ENV HOME=/home/app
-ENV APP_HOME=/home/app/web
-RUN mkdir $APP_HOME
+ENV APP_HOME=/app
+RUN mkdir -p $APP_HOME
 RUN mkdir $APP_HOME/staticfiles
 RUN mkdir $APP_HOME/mediafiles
 WORKDIR $APP_HOME
@@ -70,4 +69,4 @@ RUN chown -R app:app $APP_HOME
 USER app
 
 # run entrypoint.prod.sh
-ENTRYPOINT ["/home/app/web/entrypoint.sh"]
+ENTRYPOINT ["/home/app/entrypoint.sh"]

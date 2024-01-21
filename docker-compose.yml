@@ -5,8 +5,9 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    # command: bash -c "while true; do echo hello; sleep 2; done"
-    # env_file:
-      # - ./.env
-    # volumes:
-      # - .:/app
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    env_file:
+      - ./.env
+    volumes:
+      - .:/home/app
+      - ~/.custom_credentials:/data/credentials
