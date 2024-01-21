@@ -17,8 +17,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc
 
 # lint
-RUN pip install --upgrade pip
-RUN pip install flake8==6.0.0
+RUN pip install  --root-user-action=ignore --upgrade pip
+RUN pip install  --root-user-action=ignore flake8==6.0.0
 COPY . /usr/src/app/
 # RUN flake8 --ignore=E501,F401 .
 
@@ -51,8 +51,8 @@ WORKDIR $APP_HOME
 RUN apt-get update && apt-get install -y --no-install-recommends netcat-traditional
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install --no-cache /wheels/*
+RUN pip install  --root-user-action=ignore --upgrade pip
+RUN pip install  --root-user-action=ignore --no-cache /wheels/*
 
 # copy entrypoint.prod.sh
 COPY ./entrypoint.sh .
