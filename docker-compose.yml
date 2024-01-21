@@ -9,5 +9,5 @@ services:
     env_file:
       - ./.env
     volumes:
-      - .:/home/app
+      - .:/app
       - ${CREDENTIALS_FOLDER_PATH}:/data/credentials
