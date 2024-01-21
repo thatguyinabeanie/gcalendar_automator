@@ -10,4 +10,4 @@ services:
       - ./.env
     volumes:
       - .:/home/app
-      - ~/.custom_credentials:/data/credentials
+      - ${CREDENTIALS_FOLDER_PATH}:/data/credentials
